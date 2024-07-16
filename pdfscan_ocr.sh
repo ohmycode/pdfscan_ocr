@@ -22,11 +22,8 @@ check_pdf() {
   # Run pdffonts and check if it outputs any fonts
   if pdffonts "$file" 2>/dev/null | awk 'NR>2 {exit 1}'; then
     # PDF needs OCR
-    if [ "$print_only_ocr" = true ]; then
       echo -e "\033[31m$file needs OCR\033[0m"
-    else
-      echo -e "\033[31m$file needs OCR\033[0m"
-    fi
+
     # Perform OCR if output_path is set
     if [ -n "$output_path" ]; then
       echo "Starting OCR for $file"
@@ -41,8 +38,6 @@ check_pdf() {
   else
     # PDF contains text
     if [ "$print_only_ocr" = false ]; then
-      echo -e "\033[32m$file contains text\033[0m"
-    else
       echo -e "\033[32m$file contains text\033[0m"
     fi
   fi
@@ -101,13 +96,6 @@ fi
 if [ -n "$output_path" ] && [ ! -d "$output_path" ]; then
   mkdir -p "$output_path"
 fi
-
-# Debug output to confirm script parameters
-# echo "Parameters:"
-# echo "Directory: $dir"
-# echo "Print only OCR: $print_only_ocr"
-# echo "Output path: $output_path"
-# echo "OCR languages: $ocr_languages"
 
 # Scan the provided directory
 scan_directory "$dir" "$print_only_ocr" "$output_path" "$ocr_languages"
