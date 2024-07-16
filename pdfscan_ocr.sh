@@ -103,11 +103,11 @@ if [ -n "$output_path" ] && [ ! -d "$output_path" ]; then
 fi
 
 # Debug output to confirm script parameters
-echo "Parameters:"
-echo "Directory: $dir"
-echo "Print only OCR: $print_only_ocr"
-echo "Output path: $output_path"
-echo "OCR languages: $ocr_languages"
+# echo "Parameters:"
+# echo "Directory: $dir"
+# echo "Print only OCR: $print_only_ocr"
+# echo "Output path: $output_path"
+# echo "OCR languages: $ocr_languages"
 
 # Scan the provided directory
 scan_directory "$dir" "$print_only_ocr" "$output_path" "$ocr_languages"
