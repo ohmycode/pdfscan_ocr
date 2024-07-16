@@ -7,10 +7,24 @@ check_pdf() {
   local output_path=$3
   local ocr_languages=$4
 
+  # Check if the file is a valid PDF
+  if ! pdfinfo "$file" >/dev/null 2>&1; then
+    echo -e "\033[33m$file is not a valid PDF or is corrupted\033[0m"
+    return
+  fi
+
+  # Check if the PDF is empty
+  if [ "$(pdfinfo "$file" 2>/dev/null | awk '/Pages:/ {print $2}')" -eq 0 ]; then
+    echo -e "\033[33m$file is an empty PDF\033[0m"
+    return
+  fi
+
   # Run pdffonts and check if it outputs any fonts
   if pdffonts "$file" 2>/dev/null | awk 'NR>2 {exit 1}'; then
     # PDF needs OCR
     if [ "$print_only_ocr" = true ]; then
+      echo -e "\033[31m$file needs OCR\033[0m"
+    else
       echo -e "\033[31m$file needs OCR\033[0m"
     fi
     # Perform OCR if output_path is set
@@ -18,11 +32,17 @@ check_pdf() {
       echo "Starting OCR for $file"
       local output_file="$output_path/$(basename "$file")"
       ocrmypdf -l "$ocr_languages" "$file" "$output_file"
-      echo -e "\033[34mOCR performed on $file, saved to $output_file\033[0m"
+      if [ $? -eq 0 ]; then
+        echo -e "\033[34mOCR performed on $file, saved to $output_file\033[0m"
+      else
+        echo -e "\033[31mOCR failed for $file\033[0m"
+      fi
     fi
   else
     # PDF contains text
     if [ "$print_only_ocr" = false ]; then
+      echo -e "\033[32m$file contains text\033[0m"
+    else
       echo -e "\033[32m$file contains text\033[0m"
     fi
   fi
@@ -35,6 +55,9 @@ scan_directory() {
   local output_path=$3
   local ocr_languages=$4
 
+  # Debug output to confirm directory scan
+  echo "Scanning directory: $dir"
+
   # Find all PDF files in the directory recursively
   find "$dir" -type f -name "*.pdf" | while read -r pdf; do
     check_pdf "$pdf" "$print_only_ocr" "$output_path" "$ocr_languages"
@@ -45,6 +68,7 @@ scan_directory() {
 output_path=""
 print_only_ocr=false
 ocr_languages="eng"
+dir=""
 
 for arg in "$@"; do
   case $arg in
@@ -77,6 +101,13 @@ fi
 if [ -n "$output_path" ] && [ ! -d "$output_path" ]; then
   mkdir -p "$output_path"
 fi
+
+# Debug output to confirm script parameters
+echo "Parameters:"
+echo "Directory: $dir"
+echo "Print only OCR: $print_only_ocr"
+echo "Output path: $output_path"
+echo "OCR languages: $ocr_languages"
 
 # Scan the provided directory
 scan_directory "$dir" "$print_only_ocr" "$output_path" "$ocr_languages"
