@@ -1,6 +1,6 @@
 # PDF Scanner and OCR Script
 
-This bash script recursively scans all PDFs in a given folder, checks if they contain text, and optionally performs OCR on those that need it. It uses `pdffonts` to determine if a PDF contains text and `ocrmypdf` to perform OCR on PDFs that need it. `ocrmypdf` uses [tesseract](https://github.com/tesseract-ocr/tesseract) which supports more than 100 languages.
+This bash script recursively scans all PDFs in a given folder, checks if they contain text, and optionally performs OCR on those that doesn't. It uses `pdffonts` to determine if a PDF contains text and `ocrmypdf` to perform the OCR. `ocrmypdf` uses [tesseract](https://github.com/tesseract-ocr/tesseract) which supports more than 100 languages.
 
 ![image](demo.gif)
 
